@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>MFLIX - Watch Free HD Movies & Series</title>
+  
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { margin: 0; font-family: 'Poppins', sans-serif; background-color: #050505; color: white; overflow-x: hidden; }
+    header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(5,5,5,0.95); backdrop-filter: blur(10px); }
+    .search-container { padding: 15px; border-bottom: 1px solid #222; }
+    .search-box { display: flex; align-items: center; background: #1a1a1a; border-radius: 8px; padding: 5px 15px; border: 1px solid #333; }
+    .search-box input { flex: 1; background: transparent; border: none; color: white; padding: 10px; outline: none; }
+    .logo { font-weight: 800; color: #D32F2F; margin-right: 15px; }
+    
+    .tab-bar { display: flex; overflow-x: auto; padding: 10px; gap: 20px; border-bottom: 1px solid #222; }
+    .tab { color: #888; white-space: nowrap; cursor: pointer; padding-bottom: 5px; }
+    .tab.active { color: white; border-bottom: 2px solid #D32F2F; }
+
+    .movie-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 120px 10px 20px; }
+    .movie-card { background: #111; border-radius: 8px; overflow: hidden; position: relative; }
+    .movie-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
+    .movie-info { padding: 8px; }
+    .movie-title { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .badge { position: absolute; top: 5px; right: 5px; background: #D32F2F; font-size: 9px; padding: 2px 5px; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="search-container">
+    <div class="search-box">
+      <div class="logo">MFLIX</div>
+      <input type="text" id="searchInput" placeholder="Search movies...">
+    </div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="filterTab('home')">Home</div>
+    <div class="tab" onclick="filterTab('movies')">Movies</div>
+    <div class="tab" onclick="filterTab('tvshow')">Series</div>
+    <div class="tab" onclick="filterTab('anime')">Anime</div>
+  </div>
+</header>
+
+<main class="movie-grid" id="movieGrid"></main>
+
+<script>
+  const firebaseConfig = {
+      apiKey: "AIzaSyAFj5jrF26JDJdcteQzdojXcUypvm3UaKc",
+      databaseURL: "https://bhaag-df531-default-rtdb.firebaseio.com",
+      projectId: "bhaag-df531",
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  let allMovies = [];
+
+  async function loadData() {
+    const snap = await db.ref('movies_by_id').once('value');
+    if(snap.exists()) {
+      allMovies = Object.values(snap.val());
+      render(allMovies);
+    }
+  }
+
+  function render(data) {
+    const grid = document.getElementById('movieGrid');
+    grid.innerHTML = data.map(item => `
+      <div class="movie-card" onclick="window.location.href='video-player.html?id=${item.movie_id}'">
+        <span class="badge">${item.quality_name || 'HD'}</span>
+        <img src="${item.poster}" alt="${item.title}">
+        <div class="movie-info">
+          <div class="movie-title">${item.title}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function filterTab(cat) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    if(cat === 'home') return render(allMovies);
+    const filtered = allMovies.filter(m => m.category?.toLowerCase().includes(cat));
+    render(filtered);
+  }
+
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    const filtered = allMovies.filter(m => m.title.toLowerCase().includes(term));
+    render(filtered);
+  });
+
+  loadData();
+</script>
+</body>
+</html>
