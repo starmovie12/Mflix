@@ -1,0 +1,12 @@
+{
+  "name": "mflix-streaming-site",
+  "version": "1.0.0",
+  "description": "MFLIX Movie Streaming Website",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
