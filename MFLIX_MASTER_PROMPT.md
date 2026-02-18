@@ -10,6 +10,15 @@ You are a Principal Full-Stack Engineer, UX Motion Designer, and QA Lead.
 Build a world-class OTT streaming platform called **MFLIX** using **Next.js 14 (App Router, TypeScript)**, **Tailwind CSS**, and **TMDB API**.
 The final output must feel premium like Netflix + Amazon Prime + Disney+ Hotstar.
 
+## Critical Execution Strategy (Must Follow)
+
+Important Execution Strategy:
+1. Start by setting up the folder structure, Tailwind config, and TMDB API utility.
+2. Build the Homepage and Title Detail page first.
+3. Use Claude 3.5 Sonnet for logic if model selection is available; otherwise use the strongest available coding model.
+4. Do not summarize code; if a file is long, provide the full content. If you hit a limit, tell me to **"Continue"**.
+5. **Generate the core architecture and first 2 pages first, then stop. I will ask for the next pages one by one to ensure quality.**
+
 ## 0) Execution Rules (Non-Negotiable)
 
 1. Do not produce pseudo code. Produce fully working production-grade code.
@@ -22,6 +31,8 @@ The final output must feel premium like Netflix + Amazon Prime + Disney+ Hotstar
 8. Use best-practice caching, revalidation, loading, error boundaries, and suspense patterns.
 9. Build mobile-first responsive UI that scales perfectly to all breakpoints.
 10. The final app should be polished enough for a portfolio/demo release.
+11. Deliver in phased milestones; do not attempt all pages/features in a single response.
+12. If output limit is reached, end with `Continue` and resume exactly from where you stopped.
 
 ## 1) Project Setup Requirements
 
@@ -135,7 +146,10 @@ Implement a robust player screen:
 - continue watching row populated from saved progress
 - graceful fallback when playable video URL is unavailable
 
-Note: TMDB does not host full movies. Use TMDB videos/trailers for previews and clearly separate trailer playback from full-content simulation.
+Hard rule for realism:
+- TMDB does not host full movies/episodes or direct production-grade playback streams.
+- For advanced player features (skip intro, next episode, subtitle/audio toggles), use a mock HLS URL or sample MP4 stream for testing/demo.
+- Use TMDB videos/trailers only for discovery and trailer playback flows.
 
 ## 8) TMDB API Integration Requirements
 
@@ -210,16 +224,24 @@ Internationalization-ready:
 
 ## 13) Testing and Quality Gate
 
-Before finalizing, run and pass:
+Testing must follow phased delivery:
+
+Phase 1 (mandatory for first delivery):
 1. `npm run lint`
 2. `npm run typecheck`
-3. `npm run test`
-4. `npm run build`
+3. `npm run build`
 
-Add tests for:
+Phase 2 (after core pages are stable):
+4. `npm run test` (unit/integration)
+5. `npm run test:e2e` (Playwright smoke)
+
+Phase 2 test scope:
 - API mappers and utilities
 - critical components (card, hero, row, modal, player controls)
 - at least one e2e happy path (home -> detail -> watch -> add to list)
+
+Guideline:
+- If test tooling config is not stable in the first pass, keep test scaffolding optional and prioritize a working, error-free product baseline.
 
 ## 14) Performance Requirements
 
@@ -392,8 +414,9 @@ At the end, provide:
 5. List of implemented features
 6. Known limitations (if any)
 7. Next enhancements roadmap
+8. If work is phased, clearly state what is completed now and what requires the next prompt.
 
-Now build the complete MFLIX platform accordingly.
+Now execute **Phase 1 only**: set up architecture + TMDB utilities + Homepage + Title Detail page, then stop and wait for my next prompt.
 
 ---
 
