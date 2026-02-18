@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Hero from "@/components/Hero";
 import ContentRow from "@/components/ContentRow";
+import ContinueWatchingRow from "@/components/ContinueWatchingRow";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ToastContainer from "@/components/ui/Toast";
@@ -33,6 +34,7 @@ export default function HomeClient({ hero, rows }: HomeClientProps) {
       <Hero hero={hero} />
 
       <main className="relative z-10 -mt-24 space-y-8 pb-16 sm:space-y-10">
+        <ContinueWatchingRow />
         {rows.map((row) => (
           <ContentRow key={row.id} row={row} />
         ))}
