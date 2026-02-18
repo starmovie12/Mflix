@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Info, Play } from "lucide-react";
 import type { HeroMovie } from "@/lib/types";
-import { getImageUrl, getMovieTitle } from "@/lib/tmdb";
+import { getDisplayTitle, getTmdbImageUrl } from "@/lib/tmdb/image";
 
 interface HeroProps {
   movie: HeroMovie | null;
@@ -26,7 +26,7 @@ export default function Hero({ movie }: HeroProps) {
 
   const backgroundImage = useMemo(() => {
     if (!movie) return "/placeholder.svg";
-    return getImageUrl(movie.backdrop_path || movie.poster_path, "original");
+    return getTmdbImageUrl(movie.backdrop_path || movie.poster_path, "original");
   }, [movie]);
 
   const trailerUrl = movie?.trailerKey
@@ -47,7 +47,7 @@ export default function Hero({ movie }: HeroProps) {
         {showTrailer && trailerUrl ? (
           <iframe
             src={trailerUrl}
-            title={`${getMovieTitle(movie)} trailer`}
+            title={`${getDisplayTitle(movie)} trailer`}
             className="h-full w-full scale-[1.35] object-cover"
             allow="autoplay; fullscreen; encrypted-media"
           />
@@ -70,7 +70,7 @@ export default function Hero({ movie }: HeroProps) {
         transition={{ duration: 0.45 }}
         className="relative z-10 flex h-full max-w-2xl flex-col justify-end gap-5 px-4 pb-24 pt-32 md:px-12"
       >
-        <h1 className="text-balance text-4xl font-bold sm:text-5xl md:text-6xl">{getMovieTitle(movie)}</h1>
+        <h1 className="text-balance text-4xl font-bold sm:text-5xl md:text-6xl">{getDisplayTitle(movie)}</h1>
         <p className="line-clamp-3 max-w-2xl text-sm text-zinc-100 sm:text-base">{movie.overview || "Now streaming on MFLIX."}</p>
         <div className="flex flex-wrap gap-3">
           <Link

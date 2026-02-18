@@ -1,8 +1,15 @@
-import HomePageClient from "@/components/HomePageClient";
-import { getFeaturedMovie, getHomeRows } from "@/lib/tmdb";
+import HomeEmptyState from "@/features/home/components/home-empty-state";
+import HomePage from "@/features/home/components/home-page";
+import { getHomePageData } from "@/features/home/server/get-home-page-data";
 
-export default async function HomePage() {
-  const [heroMovie, rows] = await Promise.all([getFeaturedMovie(), getHomeRows()]);
+export const revalidate = 60 * 5;
 
-  return <HomePageClient heroMovie={heroMovie} rows={rows} />;
+export default async function Page() {
+  const { featured, rails } = await getHomePageData();
+
+  if (!featured && rails.length === 0) {
+    return <HomeEmptyState />;
+  }
+
+  return <HomePage featured={featured} rails={rails} />;
 }

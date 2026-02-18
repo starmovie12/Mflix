@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Check, Plus, Star } from "lucide-react";
 import type { TMDBMovie } from "@/lib/types";
-import { getMovieTitle } from "@/lib/tmdb";
+import { getDisplayTitle } from "@/lib/tmdb/image";
 import PosterImage from "@/components/PosterImage";
 
 interface MovieCardProps {
@@ -20,7 +20,7 @@ function formatYear(movie: TMDBMovie) {
 }
 
 export default function MovieCard({ movie, inWatchlist, onToggleWatchlist }: MovieCardProps) {
-  const title = getMovieTitle(movie);
+  const title = getDisplayTitle(movie);
   const rating = Number(movie.vote_average ?? 0).toFixed(1);
   const year = formatYear(movie);
 

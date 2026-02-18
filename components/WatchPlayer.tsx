@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, FastForward, PlayCircle } from "lucide-react";
 import { MediaCommunitySkin, MediaOutlet, MediaPlayer } from "@vidstack/react";
 import type { TMDBMovieDetails } from "@/lib/types";
-import { getImageUrl, getMovieTitle } from "@/lib/tmdb";
+import { getDisplayTitle, getTmdbImageUrl } from "@/lib/tmdb/image";
 
 interface WatchPlayerProps {
   movieId: number;
@@ -26,10 +26,17 @@ function formatDuration(runtime?: number) {
 
 export default function WatchPlayer({ movieId, movie, streamUrl }: WatchPlayerProps) {
   const router = useRouter();
-  const playerRef = useRef<any>(null);
+  const playerRef = useRef<{
+    currentTime?: number;
+    duration?: number;
+    paused?: boolean;
+    play?: () => Promise<void>;
+    pause?: () => Promise<void>;
+    enterFullscreen?: (target?: "media") => Promise<void>;
+  } | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const title = useMemo(() => getMovieTitle(movie), [movie]);
+  const title = useMemo(() => getDisplayTitle(movie), [movie]);
   const nextEpisodeId = movieId + 1;
   const nextEpisodeCountdown = Math.max(Math.ceil(duration - currentTime), 0);
   const showSkipIntro = currentTime >= 0 && currentTime <= 30;
@@ -68,15 +75,21 @@ export default function WatchPlayer({ movieId, movie, streamUrl }: WatchPlayerPr
       if (event.code === "Space") {
         event.preventDefault();
         if (player.paused) {
-          void player.play();
+          if (player.play) {
+            void player.play();
+          }
         } else {
-          void player.pause();
+          if (player.pause) {
+            void player.pause();
+          }
         }
       }
 
       if (event.key.toLowerCase() === "f") {
         event.preventDefault();
-        void player.enterFullscreen("media");
+        if (player.enterFullscreen) {
+          void player.enterFullscreen("media");
+        }
       }
     };
 
@@ -112,7 +125,7 @@ export default function WatchPlayer({ movieId, movie, streamUrl }: WatchPlayerPr
         <MediaPlayer
           ref={playerRef}
           src={streamUrl}
-          poster={getImageUrl(movie.backdrop_path || movie.poster_path, "original")}
+          poster={getTmdbImageUrl(movie.backdrop_path || movie.poster_path, "original")}
           controls
           crossOrigin
           title={title}

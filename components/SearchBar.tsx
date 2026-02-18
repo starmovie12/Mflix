@@ -6,7 +6,7 @@ import { Search, X } from "lucide-react";
 import PosterImage from "@/components/PosterImage";
 import { useDebounce } from "@/hooks/useDebounce";
 import type { TMDBMovie } from "@/lib/types";
-import { getMovieTitle } from "@/lib/tmdb";
+import { getDisplayTitle } from "@/lib/tmdb/image";
 
 interface SearchResponse {
   results: TMDBMovie[];
@@ -127,14 +127,14 @@ export default function SearchBar() {
                 >
                   <PosterImage
                     path={movie.poster_path || movie.backdrop_path}
-                    alt={getMovieTitle(movie)}
+                    alt={getDisplayTitle(movie)}
                     width={92}
                     height={138}
                     size="w300"
                     className="h-[60px] w-[42px] rounded object-cover"
                   />
                   <div className="min-w-0">
-                    <p className="line-clamp-1 text-sm font-medium text-white">{getMovieTitle(movie)}</p>
+                    <p className="line-clamp-1 text-sm font-medium text-white">{getDisplayTitle(movie)}</p>
                     <p className="text-xs text-zinc-400">{formatMeta(movie)}</p>
                   </div>
                 </Link>

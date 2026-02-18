@@ -1,3 +1,5 @@
+@import "../styles/theme.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -20,6 +22,7 @@ body {
 body {
   color: #ffffff;
   font-family: Inter, system-ui, sans-serif;
+  background-image: radial-gradient(circle at top, rgba(229, 9, 20, 0.08), transparent 42%);
 }
 
 a {
@@ -44,6 +47,14 @@ a {
 .row-scroll {
   scrollbar-width: thin;
   scrollbar-color: rgba(229, 9, 20, 0.45) transparent;
+}
+
+.row-scroll {
+  scroll-snap-type: x mandatory;
+}
+
+.row-scroll > * {
+  scroll-snap-align: start;
 }
 
 .skeleton-shimmer {
@@ -77,4 +88,20 @@ a {
 media-player {
   --media-focus-ring: 0 0 0 2px rgba(229, 9, 20, 0.95);
   --media-accent-color: #e50914;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(229, 9, 20, 0.95);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
