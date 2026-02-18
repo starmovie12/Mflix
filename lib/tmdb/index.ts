@@ -2,6 +2,7 @@ import "server-only";
 
 import { z } from "zod";
 import type { GenreTag, MediaItem, MediaRail, MediaType, SearchResult, TitleDetails } from "@/types/media";
+import { hasTmdbApiKey } from "@/lib/env";
 import { tmdbRequest } from "@/lib/tmdb/client";
 import { HOME_RAILS, tmdbEndpoints } from "@/lib/tmdb/endpoints";
 import { mapFeaturedMedia, mapMediaList, mapMediaSummary, mapTitleDetails } from "@/lib/tmdb/mappers";
@@ -18,7 +19,15 @@ const tmdbVideoListSchema = z.object({
   results: z.array(tmdbVideoSchema).default([])
 });
 
+function isTmdbConfigured() {
+  return hasTmdbApiKey();
+}
+
 async function requestMediaList(endpoint: string, mediaTypeHint?: MediaType, revalidate = 60 * 15) {
+  if (!isTmdbConfigured()) {
+    return [];
+  }
+
   const payload = await tmdbRequest(endpoint, tmdbMediaListResponseSchema, {
     revalidate,
     tags: ["tmdb", endpoint]
@@ -28,6 +37,14 @@ async function requestMediaList(endpoint: string, mediaTypeHint?: MediaType, rev
 }
 
 export async function getHomeRailsData(): Promise<MediaRail[]> {
+  if (!isTmdbConfigured()) {
+    return HOME_RAILS.map((row) => ({
+      id: row.id,
+      title: row.title,
+      items: []
+    }));
+  }
+
   const rows = await Promise.all(
     HOME_RAILS.map(async (row) => {
       try {
@@ -52,6 +69,10 @@ export async function getHomeRailsData(): Promise<MediaRail[]> {
 }
 
 export async function getFeaturedTitle(): Promise<MediaItem | null> {
+  if (!isTmdbConfigured()) {
+    return null;
+  }
+
   try {
     const payload = await tmdbRequest(tmdbEndpoints.trending("movie", "week"), tmdbMediaListResponseSchema, {
       revalidate: 60 * 10,
@@ -70,6 +91,10 @@ export async function getFeaturedTitle(): Promise<MediaItem | null> {
 }
 
 export async function getFeaturedWithTrailer() {
+  if (!isTmdbConfigured()) {
+    return null;
+  }
+
   const featured = await getFeaturedTitle();
   if (!featured) {
     return null;
@@ -96,6 +121,10 @@ export async function getFeaturedWithTrailer() {
 }
 
 export async function getGenres(mediaType: MediaType): Promise<GenreTag[]> {
+  if (!isTmdbConfigured()) {
+    return [];
+  }
+
   try {
     const payload = await tmdbRequest(tmdbEndpoints.genres(mediaType), tmdbGenreListSchema, {
       revalidate: 60 * 60 * 12,
@@ -110,6 +139,10 @@ export async function getGenres(mediaType: MediaType): Promise<GenreTag[]> {
 }
 
 export async function getMediaByGenre(mediaType: MediaType, genreId: number) {
+  if (!isTmdbConfigured()) {
+    return [];
+  }
+
   try {
     return await requestMediaList(tmdbEndpoints.discoverByGenre(mediaType, genreId), mediaType, 60 * 30);
   } catch (error) {
@@ -124,6 +157,16 @@ export async function searchTitles(query: string, page = 1): Promise<SearchResul
     return {
       query: "",
       page: 1,
+      totalPages: 0,
+      totalResults: 0,
+      results: []
+    };
+  }
+
+  if (!isTmdbConfigured()) {
+    return {
+      query: trimmedQuery,
+      page,
       totalPages: 0,
       totalResults: 0,
       results: []
@@ -163,6 +206,10 @@ export async function searchTitles(query: string, page = 1): Promise<SearchResul
 }
 
 export async function getTitleDetails(mediaType: MediaType, id: number): Promise<TitleDetails | null> {
+  if (!isTmdbConfigured()) {
+    return null;
+  }
+
   const appendToResponse =
     mediaType === "movie"
       ? "videos,images,credits,similar,recommendations"

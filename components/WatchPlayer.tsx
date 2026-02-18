@@ -75,15 +75,21 @@ export default function WatchPlayer({ movieId, movie, streamUrl }: WatchPlayerPr
       if (event.code === "Space") {
         event.preventDefault();
         if (player.paused) {
-          void player.play();
+          if (player.play) {
+            void player.play();
+          }
         } else {
-          void player.pause();
+          if (player.pause) {
+            void player.pause();
+          }
         }
       }
 
       if (event.key.toLowerCase() === "f") {
         event.preventDefault();
-        void player.enterFullscreen("media");
+        if (player.enterFullscreen) {
+          void player.enterFullscreen("media");
+        }
       }
     };
 
