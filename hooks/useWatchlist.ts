@@ -1,24 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { TMDBMovie, WatchlistMovie } from "@/lib/types";
-import { getMovieTitle } from "@/lib/tmdb";
+import type { MediaType, TitleSummary } from "@/lib/tmdb";
 
 const STORAGE_KEY = "mflix_watchlist";
 
-function toWatchlistMovie(movie: TMDBMovie): WatchlistMovie {
-  return {
-    id: movie.id,
-    title: getMovieTitle(movie),
-    overview: movie.overview ?? "",
-    poster_path: movie.poster_path ?? null,
-    backdrop_path: movie.backdrop_path ?? null,
-    vote_average: movie.vote_average ?? 0,
-    release_date: movie.release_date ?? movie.first_air_date ?? ""
-  };
+type WatchlistItem = TitleSummary;
+
+function isValidMediaType(value: unknown): value is MediaType {
+  return value === "movie" || value === "tv";
 }
 
-function isValidWatchlist(value: unknown): value is WatchlistMovie[] {
+function isValidWatchlist(value: unknown): value is WatchlistItem[] {
   return (
     Array.isArray(value) &&
     value.every(
@@ -26,13 +19,15 @@ function isValidWatchlist(value: unknown): value is WatchlistMovie[] {
         movie &&
         typeof movie === "object" &&
         "id" in movie &&
-        typeof (movie as WatchlistMovie).id === "number"
+        typeof (movie as WatchlistItem).id === "number" &&
+        "mediaType" in movie &&
+        isValidMediaType((movie as WatchlistItem).mediaType)
     )
   );
 }
 
 export function useWatchlist() {
-  const [watchlist, setWatchlist] = useState<WatchlistMovie[]>([]);
+  const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -70,13 +65,13 @@ export function useWatchlist() {
 
   const isInWatchlist = useCallback((movieId: number) => watchlistIds.has(movieId), [watchlistIds]);
 
-  const toggleWatchlist = useCallback((movie: TMDBMovie) => {
+  const toggleWatchlist = useCallback((movie: TitleSummary) => {
     setWatchlist((previous) => {
       if (previous.some((item) => item.id === movie.id)) {
         return previous.filter((item) => item.id !== movie.id);
       }
 
-      return [toWatchlistMovie(movie), ...previous];
+      return [movie, ...previous];
     });
   }, []);
 

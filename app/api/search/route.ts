@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { searchMovies } from "@/lib/tmdb";
+import { searchMulti } from "@/lib/tmdb";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const results = await searchMovies(query);
+    const results = await searchMulti(query);
     return NextResponse.json({ results: results.slice(0, 20) });
   } catch (error) {
     console.error("[Search API] Failed to return search results", error);

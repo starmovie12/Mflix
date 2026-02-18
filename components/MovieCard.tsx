@@ -3,26 +3,19 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Check, Plus, Star } from "lucide-react";
-import type { TMDBMovie } from "@/lib/types";
-import { getMovieTitle } from "@/lib/tmdb";
+import type { TitleSummary } from "@/lib/tmdb";
 import PosterImage from "@/components/PosterImage";
 
 interface MovieCardProps {
-  movie: TMDBMovie;
+  movie: TitleSummary;
   inWatchlist: boolean;
-  onToggleWatchlist: (movie: TMDBMovie) => void;
-}
-
-function formatYear(movie: TMDBMovie) {
-  const date = movie.release_date || movie.first_air_date;
-  if (!date) return "N/A";
-  return date.slice(0, 4);
+  onToggleWatchlist: (movie: TitleSummary) => void;
 }
 
 export default function MovieCard({ movie, inWatchlist, onToggleWatchlist }: MovieCardProps) {
-  const title = getMovieTitle(movie);
-  const rating = Number(movie.vote_average ?? 0).toFixed(1);
-  const year = formatYear(movie);
+  const title = movie.title;
+  const rating = Number(movie.voteAverage ?? 0).toFixed(1);
+  const year = movie.year ?? "N/A";
 
   return (
     <motion.article
@@ -32,9 +25,9 @@ export default function MovieCard({ movie, inWatchlist, onToggleWatchlist }: Mov
       className="group relative w-[128px] flex-none overflow-visible sm:w-[145px] md:w-[165px]"
     >
       <div className="relative overflow-hidden rounded-md shadow-card">
-        <Link href={`/watch/${movie.id}`} className="block">
+        <Link href={`/title/${movie.mediaType}/${movie.id}`} className="block" aria-label={`Open details for ${title}`}>
           <PosterImage
-            path={movie.poster_path || movie.backdrop_path}
+            path={movie.posterPath || movie.backdropPath}
             alt={title}
             width={330}
             height={495}

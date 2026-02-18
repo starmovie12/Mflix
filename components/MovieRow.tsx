@@ -2,15 +2,15 @@
 
 import { useMemo, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { TMDBMovie } from "@/lib/types";
+import type { TitleSummary } from "@/lib/tmdb";
 import { useInfiniteVisibleCount } from "@/hooks/useInfiniteVisibleCount";
 import MovieCard from "@/components/MovieCard";
 
 interface MovieRowProps {
   title: string;
-  movies: TMDBMovie[];
+  movies: TitleSummary[];
   watchlistIds: Set<number>;
-  onToggleWatchlist: (movie: TMDBMovie) => void;
+  onToggleWatchlist: (movie: TitleSummary) => void;
 }
 
 export default function MovieRow({ title, movies, watchlistIds, onToggleWatchlist }: MovieRowProps) {

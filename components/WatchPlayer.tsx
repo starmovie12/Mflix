@@ -5,16 +5,25 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, FastForward, PlayCircle } from "lucide-react";
 import { MediaCommunitySkin, MediaOutlet, MediaPlayer } from "@vidstack/react";
-import type { TMDBMovieDetails } from "@/lib/types";
-import { getImageUrl, getMovieTitle } from "@/lib/tmdb";
+import type { TitleDetails } from "@/lib/tmdb";
+import { getTmdbImageUrl } from "@/lib/tmdb";
 
 interface WatchPlayerProps {
   movieId: number;
-  movie: TMDBMovieDetails;
+  movie: TitleDetails;
   streamUrl: string;
 }
 
-function formatDuration(runtime?: number) {
+type PlayerLike = {
+  paused: boolean;
+  play: () => Promise<void>;
+  pause: () => Promise<void>;
+  currentTime: number;
+  duration: number;
+  enterFullscreen?: (target?: string) => Promise<void>;
+};
+
+function formatDuration(runtime: number | null) {
   if (!runtime) {
     return "Runtime unavailable";
   }
@@ -26,10 +35,10 @@ function formatDuration(runtime?: number) {
 
 export default function WatchPlayer({ movieId, movie, streamUrl }: WatchPlayerProps) {
   const router = useRouter();
-  const playerRef = useRef<any>(null);
+  const playerRef = useRef<PlayerLike | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const title = useMemo(() => getMovieTitle(movie), [movie]);
+  const title = useMemo(() => movie.title, [movie.title]);
   const nextEpisodeId = movieId + 1;
   const nextEpisodeCountdown = Math.max(Math.ceil(duration - currentTime), 0);
   const showSkipIntro = currentTime >= 0 && currentTime <= 30;
@@ -76,7 +85,7 @@ export default function WatchPlayer({ movieId, movie, streamUrl }: WatchPlayerPr
 
       if (event.key.toLowerCase() === "f") {
         event.preventDefault();
-        void player.enterFullscreen("media");
+        void player.enterFullscreen?.("media");
       }
     };
 
@@ -96,7 +105,7 @@ export default function WatchPlayer({ movieId, movie, streamUrl }: WatchPlayerPr
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-netflix">Now Playing</p>
           <h1 className="mt-1 text-2xl font-bold md:text-3xl">{title}</h1>
-          <p className="mt-1 text-sm text-zinc-400">{formatDuration(movie.runtime)}</p>
+          <p className="mt-1 text-sm text-zinc-400">{formatDuration(movie.runtimeMinutes)}</p>
         </div>
 
         <Link
@@ -110,9 +119,11 @@ export default function WatchPlayer({ movieId, movie, streamUrl }: WatchPlayerPr
 
       <div className="relative overflow-hidden rounded-lg border border-zinc-800 bg-black shadow-2xl">
         <MediaPlayer
-          ref={playerRef}
+          ref={(node) => {
+            playerRef.current = node ? (node as unknown as PlayerLike) : null;
+          }}
           src={streamUrl}
-          poster={getImageUrl(movie.backdrop_path || movie.poster_path, "original")}
+          poster={getTmdbImageUrl(movie.backdropPath || movie.posterPath, "original")}
           controls
           crossOrigin
           title={title}

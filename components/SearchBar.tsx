@@ -5,22 +5,21 @@ import { useEffect, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
 import PosterImage from "@/components/PosterImage";
 import { useDebounce } from "@/hooks/useDebounce";
-import type { TMDBMovie } from "@/lib/types";
-import { getMovieTitle } from "@/lib/tmdb";
+import type { TitleSummary } from "@/lib/tmdb";
 
 interface SearchResponse {
-  results: TMDBMovie[];
+  results: TitleSummary[];
 }
 
-function formatMeta(movie: TMDBMovie) {
-  const year = (movie.release_date || movie.first_air_date || "").slice(0, 4) || "N/A";
-  const score = Number(movie.vote_average ?? 0).toFixed(1);
+function formatMeta(movie: TitleSummary) {
+  const year = movie.year ?? "N/A";
+  const score = Number(movie.voteAverage ?? 0).toFixed(1);
   return `${year} • ${score}`;
 }
 
 export default function SearchBar() {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<TMDBMovie[]>([]);
+  const [results, setResults] = useState<TitleSummary[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const debouncedQuery = useDebounce(query, 300);
@@ -87,9 +86,9 @@ export default function SearchBar() {
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
-          placeholder="Search movies..."
+          placeholder="Search movies, TV..."
           className="w-full bg-transparent text-sm text-white outline-none placeholder:text-zinc-500"
-          aria-label="Search movies"
+          aria-label="Search titles"
         />
         {query ? (
           <button
@@ -121,20 +120,20 @@ export default function SearchBar() {
             ? results.slice(0, 10).map((movie) => (
                 <Link
                   key={movie.id}
-                  href={`/watch/${movie.id}`}
+                  href={`/title/${movie.mediaType}/${movie.id}`}
                   onClick={() => setOpen(false)}
                   className="flex items-center gap-3 rounded-md p-2 transition hover:bg-zinc-900"
                 >
                   <PosterImage
-                    path={movie.poster_path || movie.backdrop_path}
-                    alt={getMovieTitle(movie)}
+                    path={movie.posterPath || movie.backdropPath}
+                    alt={movie.title}
                     width={92}
                     height={138}
                     size="w300"
                     className="h-[60px] w-[42px] rounded object-cover"
                   />
                   <div className="min-w-0">
-                    <p className="line-clamp-1 text-sm font-medium text-white">{getMovieTitle(movie)}</p>
+                    <p className="line-clamp-1 text-sm font-medium text-white">{movie.title}</p>
                     <p className="text-xs text-zinc-400">{formatMeta(movie)}</p>
                   </div>
                 </Link>

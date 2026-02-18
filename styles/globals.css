@@ -27,6 +27,15 @@ a {
   text-decoration: none;
 }
 
+::selection {
+  background: rgba(229, 9, 20, 0.35);
+}
+
+*:focus-visible {
+  outline: 2px solid rgba(229, 9, 20, 0.95);
+  outline-offset: 2px;
+}
+
 *::-webkit-scrollbar {
   height: 8px;
   width: 8px;
@@ -78,3 +87,4 @@ media-player {
   --media-focus-ring: 0 0 0 2px rgba(229, 9, 20, 0.95);
   --media-accent-color: #e50914;
 }
+

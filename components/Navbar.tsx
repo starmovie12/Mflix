@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import SearchBar from "@/components/SearchBar";
 
 const NAV_LINKS = ["Home", "TV Shows", "Movies", "New & Popular", "My List"];
+const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "MFLIX";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -25,7 +26,7 @@ export default function Navbar() {
       <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-5 px-4 py-4 md:px-12">
         <div className="flex items-center gap-5">
           <Link href="/" className="text-2xl font-black tracking-wider text-netflix">
-            MFLIX
+            {APP_NAME}
           </Link>
 
           <nav className="hidden items-center gap-4 text-sm text-zinc-300 md:flex">

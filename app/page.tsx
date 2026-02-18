@@ -1,8 +1,7 @@
 import HomePageClient from "@/components/HomePageClient";
-import { getFeaturedMovie, getHomeRows } from "@/lib/tmdb";
+import { getHomePageData } from "@/lib/tmdb";
 
 export default async function HomePage() {
-  const [heroMovie, rows] = await Promise.all([getFeaturedMovie(), getHomeRows()]);
-
-  return <HomePageClient heroMovie={heroMovie} rows={rows} />;
+  const data = await getHomePageData();
+  return <HomePageClient data={data} />;
 }

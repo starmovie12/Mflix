@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
-import { getMovieDetails } from "@/lib/tmdb";
+import { getTitleDetails } from "@/lib/tmdb";
 
 const WatchPlayer = dynamic(() => import("@/components/WatchPlayer"), {
   ssr: false,
@@ -31,7 +31,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
     notFound();
   }
 
-  const movie = await getMovieDetails(movieId);
+  const movie = await getTitleDetails("movie", movieId);
   if (!movie) {
     notFound();
   }

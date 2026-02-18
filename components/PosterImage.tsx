@@ -2,14 +2,14 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { getImageUrl } from "@/lib/tmdb";
+import { getTmdbImageUrl, type TmdbImageSize } from "@/lib/tmdb";
 
 interface PosterImageProps {
   path: string | null | undefined;
   alt: string;
   width: number;
   height: number;
-  size?: "w300" | "w500" | "w780" | "original";
+  size?: TmdbImageSize;
   className?: string;
   priority?: boolean;
 }
@@ -23,7 +23,7 @@ export default function PosterImage({
   className,
   priority = false
 }: PosterImageProps) {
-  const initialSource = useMemo(() => getImageUrl(path, size), [path, size]);
+  const initialSource = useMemo(() => getTmdbImageUrl(path, size), [path, size]);
   const [src, setSrc] = useState(initialSource);
 
   useEffect(() => {
