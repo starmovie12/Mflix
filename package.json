@@ -1,12 +1,33 @@
 {
-  "name": "mflix-streaming-site",
+  "name": "mflix-streaming-app",
   "version": "1.0.0",
-  "description": "MFLIX Movie Streaming Website",
-  "main": "server.js",
+  "description": "MFLIX - Production-ready Netflix Clone",
+  "private": true,
   "scripts": {
-    "start": "node server.js"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "framer-motion": "^11.0.0",
+    "@vidstack/player": "^1.6.5",
+    "@vidstack/react": "^1.6.5",
+    "hls.js": "^1.4.0",
+    "lucide-react": "^0.400.0",
+    "next": "14.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "autoprefixer": "^10.4.0",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "14.2.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.0.0"
   }
 }
