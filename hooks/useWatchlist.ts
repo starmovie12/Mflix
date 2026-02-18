@@ -2,14 +2,14 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { TMDBMovie, WatchlistMovie } from "@/lib/types";
-import { getMovieTitle } from "@/lib/tmdb";
+import { getDisplayTitle } from "@/lib/tmdb/image";
 
 const STORAGE_KEY = "mflix_watchlist";
 
 function toWatchlistMovie(movie: TMDBMovie): WatchlistMovie {
   return {
     id: movie.id,
-    title: getMovieTitle(movie),
+    title: getDisplayTitle(movie),
     overview: movie.overview ?? "",
     poster_path: movie.poster_path ?? null,
     backdrop_path: movie.backdrop_path ?? null,
