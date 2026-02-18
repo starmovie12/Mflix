@@ -3,6 +3,14 @@ import "server-only";
 import { z } from "zod";
 import type { GenreTag, MediaItem, MediaRail, MediaType, SearchResult, TitleDetails } from "@/types/media";
 import { hasTmdbApiKey } from "@/lib/env";
+import {
+  getMockFeaturedWithTrailer,
+  getMockGenres,
+  getMockHomeRails,
+  getMockMediaByGenre,
+  getMockSearchResults,
+  getMockTitleDetails
+} from "@/lib/mock/tmdb-fallback";
 import { tmdbRequest } from "@/lib/tmdb/client";
 import { HOME_RAILS, tmdbEndpoints } from "@/lib/tmdb/endpoints";
 import { mapFeaturedMedia, mapMediaList, mapMediaSummary, mapTitleDetails } from "@/lib/tmdb/mappers";
@@ -38,11 +46,7 @@ async function requestMediaList(endpoint: string, mediaTypeHint?: MediaType, rev
 
 export async function getHomeRailsData(): Promise<MediaRail[]> {
   if (!isTmdbConfigured()) {
-    return HOME_RAILS.map((row) => ({
-      id: row.id,
-      title: row.title,
-      items: []
-    }));
+    return getMockHomeRails();
   }
 
   const rows = await Promise.all(
@@ -65,12 +69,17 @@ export async function getHomeRailsData(): Promise<MediaRail[]> {
     })
   );
 
+  const hasRenderableRow = rows.some((row) => row.items.length > 0);
+  if (!hasRenderableRow) {
+    return getMockHomeRails();
+  }
+
   return rows;
 }
 
 export async function getFeaturedTitle(): Promise<MediaItem | null> {
   if (!isTmdbConfigured()) {
-    return null;
+    return getMockFeaturedWithTrailer();
   }
 
   try {
@@ -86,13 +95,13 @@ export async function getFeaturedTitle(): Promise<MediaItem | null> {
     return movie ?? null;
   } catch (error) {
     console.error("[TMDB] Failed loading featured title", error);
-    return null;
+    return getMockFeaturedWithTrailer();
   }
 }
 
 export async function getFeaturedWithTrailer() {
   if (!isTmdbConfigured()) {
-    return null;
+    return getMockFeaturedWithTrailer();
   }
 
   const featured = await getFeaturedTitle();
@@ -122,7 +131,7 @@ export async function getFeaturedWithTrailer() {
 
 export async function getGenres(mediaType: MediaType): Promise<GenreTag[]> {
   if (!isTmdbConfigured()) {
-    return [];
+    return getMockGenres(mediaType);
   }
 
   try {
@@ -134,20 +143,20 @@ export async function getGenres(mediaType: MediaType): Promise<GenreTag[]> {
     return payload.genres;
   } catch (error) {
     console.error(`[TMDB] Failed loading ${mediaType} genres`, error);
-    return [];
+    return getMockGenres(mediaType);
   }
 }
 
 export async function getMediaByGenre(mediaType: MediaType, genreId: number) {
   if (!isTmdbConfigured()) {
-    return [];
+    return getMockMediaByGenre(mediaType, genreId);
   }
 
   try {
     return await requestMediaList(tmdbEndpoints.discoverByGenre(mediaType, genreId), mediaType, 60 * 30);
   } catch (error) {
     console.error(`[TMDB] Failed loading ${mediaType} by genre`, error);
-    return [];
+    return getMockMediaByGenre(mediaType, genreId);
   }
 }
 
@@ -164,13 +173,7 @@ export async function searchTitles(query: string, page = 1): Promise<SearchResul
   }
 
   if (!isTmdbConfigured()) {
-    return {
-      query: trimmedQuery,
-      page,
-      totalPages: 0,
-      totalResults: 0,
-      results: []
-    };
+    return getMockSearchResults(trimmedQuery, page);
   }
 
   try {
@@ -195,19 +198,13 @@ export async function searchTitles(query: string, page = 1): Promise<SearchResul
     };
   } catch (error) {
     console.error("[TMDB] Failed searching titles", error);
-    return {
-      query: trimmedQuery,
-      page,
-      totalPages: 0,
-      totalResults: 0,
-      results: []
-    };
+    return getMockSearchResults(trimmedQuery, page);
   }
 }
 
 export async function getTitleDetails(mediaType: MediaType, id: number): Promise<TitleDetails | null> {
   if (!isTmdbConfigured()) {
-    return null;
+    return getMockTitleDetails(mediaType, id);
   }
 
   const appendToResponse =
@@ -228,6 +225,6 @@ export async function getTitleDetails(mediaType: MediaType, id: number): Promise
     return mapTitleDetails(payload, mediaType);
   } catch (error) {
     console.error(`[TMDB] Failed loading ${mediaType} details`, error);
-    return null;
+    return getMockTitleDetails(mediaType, id);
   }
 }
