@@ -1,7 +1,7 @@
 import "server-only";
 
 import { z } from "zod";
-import { env, hasTmdbApiKey } from "@/lib/env";
+import { env, getTmdbApiKey, getTmdbConfigHelpText, hasTmdbApiKey } from "@/lib/env";
 
 const DEFAULT_REVALIDATE_SECONDS = 60 * 15;
 const DEFAULT_TIMEOUT_MS = 8000;
@@ -44,17 +44,16 @@ function isRetryableStatus(status: number) {
 }
 
 function toUrl(endpoint: string, params: TmdbRequestParams = {}) {
-  if (!hasTmdbApiKey() || !env.TMDB_API_KEY) {
-    throw new TmdbApiError(
-      "TMDB_API_KEY is not configured. Add it to .env.local before running TMDB-powered routes.",
-      "CONFIG"
-    );
+  const tmdbApiKey = getTmdbApiKey();
+
+  if (!hasTmdbApiKey() || !tmdbApiKey) {
+    throw new TmdbApiError(`TMDB_API_KEY is not configured. ${getTmdbConfigHelpText()}`, "CONFIG");
   }
 
   const [path, existingQuery = ""] = endpoint.split("?");
   const searchParams = new URLSearchParams(existingQuery);
 
-  searchParams.set("api_key", env.TMDB_API_KEY);
+  searchParams.set("api_key", tmdbApiKey);
   searchParams.set("language", "en-US");
 
   for (const [key, value] of Object.entries(params)) {
@@ -182,7 +181,7 @@ export function mapTmdbError(error: unknown) {
       case "CONFIG":
         return {
           code: error.code,
-          message: "TMDB key is missing. Set TMDB_API_KEY in .env.local."
+          message: `TMDB key is missing. ${getTmdbConfigHelpText()}`
         };
       case "TIMEOUT":
         return {

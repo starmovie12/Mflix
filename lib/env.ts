@@ -17,5 +17,14 @@ if (!parsedEnv.success) {
 export const env = parsedEnv.data;
 
 export function hasTmdbApiKey() {
-  return Boolean(env.TMDB_API_KEY);
+  return Boolean(getTmdbApiKey());
+}
+
+export function getTmdbApiKey() {
+  const value = env.TMDB_API_KEY?.trim();
+  return value ? value : null;
+}
+
+export function getTmdbConfigHelpText() {
+  return "Set TMDB_API_KEY in your host environment variables (or .env.local for local development).";
 }
