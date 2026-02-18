@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import TopLoader from "@/components/TopLoader";
+import BackToTop from "@/components/BackToTop";
 import "./globals.css";
 
 const inter = Inter({
@@ -13,7 +15,14 @@ export const metadata: Metadata = {
   description: "Watch unlimited movies and TV shows on MFLIX. Stream anywhere, anytime.",
   manifest: "/manifest.json",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
+  openGraph: {
+    title: "MFLIX - Stream Movies & TV Shows",
+    description: "Watch unlimited movies and TV shows on MFLIX.",
+    type: "website",
+    siteName: "MFLIX",
   },
 };
 
@@ -31,7 +40,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body className="min-h-screen bg-background font-sans antialiased">
+        <TopLoader />
         {children}
+        <BackToTop />
       </body>
     </html>
   );
