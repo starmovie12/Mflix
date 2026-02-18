@@ -32,7 +32,10 @@ export default function MovieCard({ movie, inWatchlist, onToggleWatchlist }: Mov
       className="group relative w-[128px] flex-none overflow-visible sm:w-[145px] md:w-[165px]"
     >
       <div className="relative overflow-hidden rounded-md shadow-card">
-        <Link href={`/watch/${movie.id}`} className="block">
+        <Link
+          href={`/title/${(movie.media_type === "tv" ? "tv" : "movie")}/${movie.id}`}
+          className="block"
+        >
           <PosterImage
             path={movie.poster_path || movie.backdrop_path}
             alt={title}
