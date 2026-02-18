@@ -14,7 +14,8 @@ function toWatchlistMovie(movie: TMDBMovie): WatchlistMovie {
     poster_path: movie.poster_path ?? null,
     backdrop_path: movie.backdrop_path ?? null,
     vote_average: movie.vote_average ?? 0,
-    release_date: movie.release_date ?? movie.first_air_date ?? ""
+    release_date: movie.release_date ?? movie.first_air_date ?? "",
+    media_type: movie.media_type === "tv" ? "tv" : "movie"
   };
 }
 

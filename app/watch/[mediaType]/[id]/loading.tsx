@@ -1,4 +1,4 @@
-export default function WatchLoading() {
+export default function WatchMediaTypeLoading() {
   return (
     <main className="min-h-screen bg-pitch px-4 pb-12 pt-24 md:px-12">
       <div className="mx-auto max-w-[1600px] space-y-5">

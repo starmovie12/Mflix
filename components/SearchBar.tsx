@@ -118,10 +118,12 @@ export default function SearchBar() {
           ) : null}
 
           {!isLoading
-            ? results.slice(0, 10).map((movie) => (
+            ? results.slice(0, 10).map((movie) => {
+                const mediaType = movie.media_type === "tv" ? "tv" : "movie";
+                return (
                 <Link
                   key={movie.id}
-                  href={`/watch/${movie.id}`}
+                  href={`/title/${mediaType}/${movie.id}`}
                   onClick={() => setOpen(false)}
                   className="flex items-center gap-3 rounded-md p-2 transition hover:bg-zinc-900"
                 >
@@ -131,6 +133,7 @@ export default function SearchBar() {
                     width={92}
                     height={138}
                     size="w300"
+                    sizes="42px"
                     className="h-[60px] w-[42px] rounded object-cover"
                   />
                   <div className="min-w-0">
@@ -138,7 +141,8 @@ export default function SearchBar() {
                     <p className="text-xs text-zinc-400">{formatMeta(movie)}</p>
                   </div>
                 </Link>
-              ))
+                );
+              })
             : null}
         </div>
       ) : null}

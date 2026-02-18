@@ -14,6 +14,15 @@ interface WatchPlayerProps {
   streamUrl: string;
 }
 
+interface PlayerHandle {
+  paused: boolean;
+  currentTime: number;
+  duration: number;
+  play: () => Promise<void>;
+  pause: () => Promise<void>;
+  enterFullscreen: (target?: "media" | "prefer-media") => Promise<void>;
+}
+
 function formatDuration(runtime?: number) {
   if (!runtime) {
     return "Runtime unavailable";
@@ -26,10 +35,11 @@ function formatDuration(runtime?: number) {
 
 export default function WatchPlayer({ movieId, movie, streamUrl }: WatchPlayerProps) {
   const router = useRouter();
-  const playerRef = useRef<any>(null);
+  const playerRef = useRef<PlayerHandle | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const title = useMemo(() => getMovieTitle(movie), [movie]);
+  const mediaType = movie.media_type === "tv" ? "tv" : "movie";
   const nextEpisodeId = movieId + 1;
   const nextEpisodeCountdown = Math.max(Math.ceil(duration - currentTime), 0);
   const showSkipIntro = currentTime >= 0 && currentTime <= 30;
@@ -86,9 +96,9 @@ export default function WatchPlayer({ movieId, movie, streamUrl }: WatchPlayerPr
 
   useEffect(() => {
     if (showNextEpisode && nextEpisodeCountdown === 0) {
-      router.push(`/watch/${nextEpisodeId}`);
+      router.push(`/watch/${mediaType}/${nextEpisodeId}`);
     }
-  }, [nextEpisodeCountdown, nextEpisodeId, router, showNextEpisode]);
+  }, [mediaType, nextEpisodeCountdown, nextEpisodeId, router, showNextEpisode]);
 
   return (
     <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-6 px-4 pb-12 pt-24 md:px-12">
@@ -140,7 +150,7 @@ export default function WatchPlayer({ movieId, movie, streamUrl }: WatchPlayerPr
         {showNextEpisode ? (
           <button
             type="button"
-            onClick={() => router.push(`/watch/${nextEpisodeId}`)}
+            onClick={() => router.push(`/watch/${mediaType}/${nextEpisodeId}`)}
             className="absolute bottom-5 right-5 z-20 inline-flex items-center gap-2 rounded-md bg-white px-4 py-2 text-sm font-semibold text-black shadow-lg transition hover:bg-zinc-200"
           >
             <PlayCircle className="h-4 w-4" />

@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
-import { getMovieDetails } from "@/lib/tmdb";
+import { getTitleDetails } from "@/lib/tmdb/server";
+import type { TMDBMediaType } from "@/lib/types";
 
 const WatchPlayer = dynamic(() => import("@/components/WatchPlayer"), {
   ssr: false,
@@ -15,32 +16,39 @@ const MOCK_HLS_STREAMS = [
 
 interface WatchPageProps {
   params: {
+    mediaType: string;
     id: string;
   };
 }
 
-function pickMockStream(movieId: number) {
-  const index = Math.abs(movieId) % MOCK_HLS_STREAMS.length;
+function isMediaType(value: string): value is TMDBMediaType {
+  return value === "movie" || value === "tv";
+}
+
+function pickMockStream(titleId: number) {
+  const index = Math.abs(titleId) % MOCK_HLS_STREAMS.length;
   return MOCK_HLS_STREAMS[index];
 }
 
 export default async function WatchPage({ params }: WatchPageProps) {
-  const movieId = Number(params.id);
-
-  if (!Number.isFinite(movieId)) {
+  const { mediaType, id: rawId } = params;
+  if (!isMediaType(mediaType)) {
     notFound();
   }
 
-  const movie = await getMovieDetails(movieId);
-  if (!movie) {
+  const id = Number(rawId);
+  if (!Number.isFinite(id)) {
     notFound();
   }
 
-  const streamUrl = pickMockStream(movieId);
+  const titleData = await getTitleDetails(mediaType, id);
+  if (!titleData) {
+    notFound();
+  }
 
   return (
     <main className="min-h-screen bg-pitch text-white">
-      <WatchPlayer movieId={movieId} movie={movie} streamUrl={streamUrl} />
+      <WatchPlayer movieId={id} movie={titleData} streamUrl={pickMockStream(id)} />
     </main>
   );
 }

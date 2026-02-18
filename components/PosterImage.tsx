@@ -10,6 +10,7 @@ interface PosterImageProps {
   width: number;
   height: number;
   size?: "w300" | "w500" | "w780" | "original";
+  sizes?: string;
   className?: string;
   priority?: boolean;
 }
@@ -20,6 +21,7 @@ export default function PosterImage({
   width,
   height,
   size = "w500",
+  sizes = "(max-width: 640px) 40vw, (max-width: 1024px) 25vw, 16vw",
   className,
   priority = false
 }: PosterImageProps) {
@@ -37,6 +39,7 @@ export default function PosterImage({
       width={width}
       height={height}
       priority={priority}
+      sizes={sizes}
       className={className}
       onError={() => setSrc("/placeholder.svg")}
     />

@@ -21,6 +21,7 @@ function toWatchlistAsMovies(watchlist: Array<{
   backdrop_path: string | null;
   vote_average: number;
   release_date: string;
+  media_type?: "movie" | "tv";
 }>): TMDBMovie[] {
   return watchlist.map((movie) => ({
     id: movie.id,
@@ -29,7 +30,8 @@ function toWatchlistAsMovies(watchlist: Array<{
     poster_path: movie.poster_path,
     backdrop_path: movie.backdrop_path,
     vote_average: movie.vote_average,
-    release_date: movie.release_date
+    release_date: movie.release_date,
+    media_type: movie.media_type === "tv" ? "tv" : "movie"
   }));
 }
 

@@ -23,6 +23,7 @@ export default function MovieCard({ movie, inWatchlist, onToggleWatchlist }: Mov
   const title = getMovieTitle(movie);
   const rating = Number(movie.vote_average ?? 0).toFixed(1);
   const year = formatYear(movie);
+  const mediaType = movie.media_type === "tv" ? "tv" : "movie";
 
   return (
     <motion.article
@@ -32,13 +33,14 @@ export default function MovieCard({ movie, inWatchlist, onToggleWatchlist }: Mov
       className="group relative w-[128px] flex-none overflow-visible sm:w-[145px] md:w-[165px]"
     >
       <div className="relative overflow-hidden rounded-md shadow-card">
-        <Link href={`/watch/${movie.id}`} className="block">
+        <Link href={`/title/${mediaType}/${movie.id}`} className="block">
           <PosterImage
             path={movie.poster_path || movie.backdrop_path}
             alt={title}
             width={330}
             height={495}
             size="w500"
+            sizes="(max-width: 640px) 34vw, (max-width: 1024px) 22vw, 12vw"
             className="h-[180px] w-full object-cover sm:h-[205px] md:h-[235px]"
           />
         </Link>
