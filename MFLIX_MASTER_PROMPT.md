@@ -33,6 +33,7 @@ Important Execution Strategy:
 10. The final app should be polished enough for a portfolio/demo release.
 11. Deliver in phased milestones; do not attempt all pages/features in a single response.
 12. If output limit is reached, end with `Continue` and resume exactly from where you stopped.
+13. If a page/component becomes too large, automatically split it into smaller sub-components to reduce browser memory pressure (especially on mobile workflows).
 
 ## 1) Project Setup Requirements
 
@@ -176,6 +177,7 @@ Rules:
 - normalize data into UI-friendly models.
 - cache responses with sensible revalidation windows.
 - add retry logic + error mapping + empty states.
+- ensure a centralized TMDB image utility constructs URLs (`base + size + path`) to prevent broken image links.
 
 ## 9) Data and State Strategy
 
@@ -251,6 +253,7 @@ Guideline:
   - Best Practices >= 95
   - SEO >= 95
 - Use `next/image` with proper sizes
+- Always set accurate `sizes` and use `priority` for hero/billboard images to protect LCP and keep Lighthouse Performance >= 90.
 - lazy load non-critical sections
 - code split heavy client components
 - avoid unnecessary re-renders
