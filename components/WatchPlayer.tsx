@@ -5,7 +5,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, FastForward, PlayCircle } from "lucide-react";
 import { MediaCommunitySkin, MediaOutlet, MediaPlayer } from "@vidstack/react";
-import type { MediaPlayerElement } from "vidstack";
 import type { TMDBMovieDetails } from "@/lib/types";
 import { getImageUrl, getMovieTitle } from "@/lib/tmdb";
 
@@ -27,7 +26,7 @@ function formatDuration(runtime?: number) {
 
 export default function WatchPlayer({ movieId, movie, streamUrl }: WatchPlayerProps) {
   const router = useRouter();
-  const playerRef = useRef<MediaPlayerElement | null>(null);
+  const playerRef = useRef<any>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const title = useMemo(() => getMovieTitle(movie), [movie]);
@@ -41,8 +40,8 @@ export default function WatchPlayer({ movieId, movie, streamUrl }: WatchPlayerPr
       const player = playerRef.current;
       if (!player) return;
 
-      setCurrentTime(player.currentTime || 0);
-      const durationValue = Number((player as unknown as { duration?: number }).duration ?? 0);
+      setCurrentTime(Number(player.currentTime ?? 0));
+      const durationValue = Number(player.duration ?? 0);
       setDuration(durationValue);
     }, 250);
 
