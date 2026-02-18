@@ -1,0 +1,21 @@
+{
+  "name": "MFLIX",
+  "short_name": "MFLIX",
+  "description": "Stream trending movies and TV-inspired experiences with MFLIX.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
