@@ -65,7 +65,7 @@ Important Execution Strategy:
 Use environment variables and never hardcode secrets in source:
 
 ```env
-TMDB_API_KEY=YOUR_TMDB_API_KEY
+TMDB_API_KEY=aa844700ff3f44363be5bf50f78df0b1
 TMDB_BASE_URL=https://api.themoviedb.org/3
 TMDB_IMAGE_BASE_URL=https://image.tmdb.org/t/p
 NEXT_PUBLIC_APP_NAME=MFLIX
